@@ -32,6 +32,7 @@ pip install -r requirements.txt
 ### Commands
 
 - `pytest-watch` to start testing code changes
+- `black .` to reformat everything
 
 ### Python packages
 

@@ -1,0 +1,10 @@
+[tool.black]
+line-length = 68
+py36 = true
+exclude = '''
+/(
+    \.direnv
+  | \.git
+  | __pycache__
+)/
+'''
