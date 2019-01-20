@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": ".direnv/python-venv-3.7.2/bin/python",
+    "python.terminal.activateEnvironment": false
+}

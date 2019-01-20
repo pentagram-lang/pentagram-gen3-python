@@ -16,7 +16,7 @@ The code here in this Git repo is a temporary interpreter (in Python), created t
 
 ### Prerequisites
 
-You'll need [Python 3.7.2](https://www.python.org/downloads/release/python-372/) and [Pipenv](https://pipenv.readthedocs.io/en/latest/).
+You'll need [Python 3.7.2](https://www.python.org/downloads/release/python-372/) and [Direnv](https://direnv.net/).
 
 ### Initial setup
 
@@ -25,14 +25,18 @@ These commands will get the code and get you into a running Python environment:
 ```bash
 git clone https://github.com/tacit-lang/tacit-gen3-python.git
 cd tacit-gen3-python
-pipenv install
-pipenv shell
+direnv allow
+pip install -r requirements.txt
 ```
 
-### Workflow
+### Commands
 
 - `pytest-watch` to start testing code changes
-- `pipenv install package==version` to install new packages
+
+### Python packages
+
+1. Change installed packages with `pip install` or `pip uninstall`
+2. Upgrade and freeze all packages with `./pip_freeze.sh`
 
 ## License
 
