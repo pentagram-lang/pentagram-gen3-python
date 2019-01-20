@@ -34,6 +34,7 @@ pip install -r requirements.txt
 - `pytest-watch` to start testing code changes
 - `black .` to reformat everything
 - `isort -rc .` to sort imports
+- `flake8 .` to check the code style
 
 ### Python packages
 

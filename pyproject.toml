@@ -1,6 +1,4 @@
 [tool.black]
-line-length = 68
-py36 = true
 exclude = '''
 /(
     \.direnv
@@ -8,3 +6,5 @@ exclude = '''
   | __pycache__
 )/
 '''
+line-length = 68
+py36 = true

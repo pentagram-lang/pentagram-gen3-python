@@ -1,0 +1,5 @@
+[flake8]
+exclude = .direnv,.git,__pycache__
+max-complexity = 10
+max-line-length = 68
+select = A,B,B9,C,E,F,W

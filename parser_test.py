@@ -22,9 +22,9 @@ def lines_tests():
 
 
 @params(lines_tests)
-def test_lines(input, output):
-    result = Parsers.lines.parse(input)
-    if output is not None:
-        assert result == parsita.Success(output)
+def test_lines(text, expected_result):
+    result = Parsers.lines.parse(text)
+    if expected_result is not None:
+        assert result == parsita.Success(expected_result)
     else:
         assert type(result) == parsita.Failure
