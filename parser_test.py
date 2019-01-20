@@ -1,6 +1,8 @@
 import parsita
 
-from parser import Identifier, Number, Parsers
+from parser import Identifier
+from parser import Number
+from parser import Parsers
 from test import params
 
 

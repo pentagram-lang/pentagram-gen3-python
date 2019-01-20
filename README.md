@@ -33,6 +33,7 @@ pip install -r requirements.txt
 
 - `pytest-watch` to start testing code changes
 - `black .` to reformat everything
+- `isort -rc .` to sort imports
 
 ### Python packages
 
