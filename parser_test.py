@@ -12,7 +12,11 @@ def lines_tests():
     yield "123.0", None
     yield "a-b-c", [[Identifier("a-b-c")]]
     yield "abc d e", [
-        [Identifier("abc"), Identifier("d"), Identifier("e")]
+        [
+            Identifier("abc"),
+            Identifier("d"),
+            Identifier("e"),
+        ]
     ]
     yield "123 abc", [[Number(123), Identifier("abc")]]
     yield "123 abc\n456 def", [

@@ -6,5 +6,5 @@ exclude = '''
   | __pycache__
 )/
 '''
-line-length = 68
+line-length = 60
 py36 = true

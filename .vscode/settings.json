@@ -1,4 +1,15 @@
 {
+    "editor.detectIndentation": false,
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": false,
+    "editor.insertSpaces": true,
+    "editor.rulers": [60],
+    "editor.minimap.maxColumn": 60,
+    "editor.tabSize": 4,
+    "files.autoSave": "onFocusChange",
+    "python.formatting.provider": "black",
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": false,
     "python.pythonPath": ".direnv/python-venv-3.7.2/bin/python",
     "python.terminal.activateEnvironment": false
 }
