@@ -3,6 +3,7 @@ exclude = '''
 /(
     \.direnv
   | \.git
+  | \.vscode/\.ropeproject
   | __pycache__
 )/
 '''

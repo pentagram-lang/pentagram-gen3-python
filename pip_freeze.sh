@@ -1,5 +1,10 @@
 #!/bin/bash
 set -e
-pip freeze --all | cut -d = -f 1 | pip install -U -r /dev/stdin
+EXCEPT=pyflakes
+pip freeze --all \
+    | cut -d = -f 1 \
+    | grep -v "$EXCEPT" \
+    | pip install -U -r /dev/stdin
 pip check
-pip freeze --all > requirements.txt
+pip freeze --all \
+    > requirements.txt
