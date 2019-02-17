@@ -1,34 +1,97 @@
 import parsita
 
-from parser import Identifier
-from parser import Number
 from parser import Parsers
+from syntax_tree import NumberTerm
+from syntax_tree import IdentifierTerm
+from syntax_tree import Expression
+from syntax_tree import ExpressionStatement
+from syntax_tree import Block
 from test import params
 
 
-def lines_tests():
-    yield "123", [[Number(123)]]
-    yield "1 2 3", [[Number(1), Number(2), Number(3)]]
-    yield "123.0", None
-    yield "a-b-c", [[Identifier("a-b-c")]]
-    yield "abc d e", [
-        [
-            Identifier("abc"),
-            Identifier("d"),
-            Identifier("e"),
-        ]
-    ]
-    yield "123 abc", [[Number(123), Identifier("abc")]]
-    yield "123 abc\n456 def", [
-        [Number(123), Identifier("abc")],
-        [Number(456), Identifier("def")],
-    ]
-
-
-@params(lines_tests)
-def test_lines(text, expected_result):
-    result = Parsers.lines.parse(text)
+def parse_test(parser, text, expected_result):
+    result = parser.parse(text)
     if expected_result is not None:
-        assert result == parsita.Success(expected_result)
+        assert result.or_die() == expected_result
     else:
-        assert type(result) == parsita.Failure
+        assert isinstance(result, parsita.Failure)
+
+
+def number_term_test():
+    yield "123", NumberTerm(123)
+    yield "123.0", None
+
+
+@params(number_term_test)
+def test_number_term(text, expected_result):
+    parse_test(Parsers.number_term, text, expected_result)
+
+
+def identifier_term_test():
+    yield "a-b-c", IdentifierTerm("a-b-c")
+
+
+@params(identifier_term_test)
+def test_identifier_term(text, expected_result):
+    parse_test(
+        Parsers.identifier_term, text, expected_result
+    )
+
+
+def expression_test():
+    yield "1 2 3", Expression(
+        [NumberTerm(1), NumberTerm(2), NumberTerm(3)],
+        comment=None,
+        block=None,
+    )
+    yield "abc d e", Expression(
+        [
+            IdentifierTerm("abc"),
+            IdentifierTerm("d"),
+            IdentifierTerm("e"),
+        ],
+        comment=None,
+        block=None,
+    )
+    yield "123 abc", Expression(
+        [NumberTerm(123), IdentifierTerm("abc")],
+        comment=None,
+        block=None,
+    )
+
+
+@params(expression_test)
+def test_expression(text, expected_result):
+    parse_test(Parsers.expression, text, expected_result)
+
+
+def block_test():
+    yield "123 abc\n456 def", Block(
+        [
+            ExpressionStatement(
+                Expression(
+                    [
+                        NumberTerm(123),
+                        IdentifierTerm("abc"),
+                    ],
+                    comment=None,
+                    block=None,
+                )
+            ),
+            ExpressionStatement(
+                Expression(
+                    [
+                        NumberTerm(456),
+                        IdentifierTerm("def"),
+                    ],
+                    comment=None,
+                    block=None,
+                )
+            ),
+        ]
+    )
+
+
+@params(block_test)
+def test_block(text, expected_result):
+    parse_test(Parsers.block, text, expected_result)

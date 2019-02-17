@@ -10,7 +10,8 @@
     "editor.tabSize": 4,
     "files.autoSave": "onFocusChange",
     "python.analysis.disabled": [
-        "used-before-assignment"
+        "used-before-assignment",
+        "use-before-def"
     ],
     "python.formatting.provider": "black",
     "python.linting.banditEnabled": false,
