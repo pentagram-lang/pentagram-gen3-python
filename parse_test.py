@@ -1,11 +1,11 @@
 import parsita
 
-from parser import Parsers
-from syntax_tree import NumberTerm
-from syntax_tree import IdentifierTerm
+from parse import Parsers
+from syntax_tree import Block
 from syntax_tree import Expression
 from syntax_tree import ExpressionStatement
-from syntax_tree import Block
+from syntax_tree import IdentifierTerm
+from syntax_tree import NumberTerm
 from test import params
 
 

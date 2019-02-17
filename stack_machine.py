@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import Optional
+from syntax_tree import Block
 from typing import Dict
 from typing import List
-from syntax_tree import Block
+from typing import Optional
 
 
 @dataclass
