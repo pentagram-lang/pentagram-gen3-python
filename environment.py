@@ -6,5 +6,5 @@ from stack_machine import NumberValue
 
 def base_environment() -> Environment:
     return Environment(
-        bindings=dict(pi=NumberValue(math.pi)), outer=None
+        bindings={"pi": NumberValue(math.pi)}, base=None
     )

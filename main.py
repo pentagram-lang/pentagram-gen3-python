@@ -2,15 +2,10 @@ import sys
 
 from environment import base_environment
 from interpret import interpret
-from interpret.block import interpret_block
 from loop import loop
 from parse import parse_block
 from parse import parse_statement
-from stack_machine import Environment
 from stack_machine import ExpressionStack
-from stack_machine import Frame
-from stack_machine import FrameStack
-from stack_machine import InstructionPointer
 from syntax_tree import Block
 
 
@@ -25,33 +20,20 @@ def main_run(source_filename):
     with open(source_filename, "r") as source_file:
         source_text = source_file.read()
     block = parse_block(source_text)
+    expression_stack = ExpressionStack([])
     environment = base_environment()
-    interpret(block, environment)
+    interpret(block, expression_stack, environment)
+    print(expression_stack.values)
 
 
 def main_loop():
-    environment = Environment(dict(), base_environment())
-    block = Block([])
+    environment = base_environment().extend({})
 
     def statement_loop(statement_text):
         statement = parse_statement(statement_text)
-        block.statements.append(statement)
+        block = Block([statement])
         expression_stack = ExpressionStack([])
-        frame_stack = FrameStack([])
-        frame_stack.push(
-            Frame(
-                InstructionPointer(
-                    block,
-                    statement_index=len(block.statements)
-                    - 1,
-                    expression_term_index=0,
-                ),
-                expression_stack,
-                environment,
-            )
-        )
-        while frame_stack:
-            interpret_block(frame_stack)
+        interpret(block, expression_stack, environment)
         return expression_stack.values
 
     loop(statement_loop)

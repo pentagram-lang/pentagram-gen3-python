@@ -29,13 +29,16 @@ class ExpressionStack:
 @dataclass
 class Environment:
     bindings: Dict[str, Value]
-    outer: Optional["Environment"]
+    base: Optional["Environment"]
+
+    def extend(self, bindings: Dict[str, Value]):
+        return Environment(bindings, base=self)
 
     def __getitem__(self, key):
         value = self.bindings.get(key)
         if value is None:
-            if self.outer:
-                return self.outer[key]
+            if self.base:
+                return self.base[key]
             else:
                 raise KeyError(key)
         else:
