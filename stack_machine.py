@@ -11,14 +11,35 @@ class Value:
 
 
 @dataclass
+class NumberValue:
+    value: int
+
+
+@dataclass
 class ExpressionStack:
     values: List[Value]
+
+    def push(self, value: Value):
+        self.values.append(value)
+
+    def pop(self) -> Value:
+        return self.values.pop()
 
 
 @dataclass
 class Environment:
     bindings: Dict[str, Value]
-    link: Optional["Environment"]
+    outer: Optional["Environment"]
+
+    def __getitem__(self, key):
+        value = self.bindings.get(key)
+        if value is None:
+            if self.outer:
+                return self.outer[key]
+            else:
+                raise KeyError(key)
+        else:
+            return value
 
 
 @dataclass
@@ -33,4 +54,22 @@ class Frame:
     instruction_pointer: InstructionPointer
     expression_stack: ExpressionStack
     environment: Environment
-    link: Optional["Frame"]
+
+
+@dataclass
+class FrameStack:
+    frames: List[Frame]
+
+    def push(self, frame: Frame):
+        self.frames.append(frame)
+
+    def pop(self):
+        return self.frames.pop()
+
+    def __bool__(self):
+        return bool(self.frames)
+
+    @property
+    def current(self) -> Frame:
+        assert self.frames
+        return self.frames[-1]
