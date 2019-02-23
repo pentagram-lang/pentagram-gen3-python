@@ -12,7 +12,3 @@ def params(generator):
         )(func)
 
     return inner
-
-
-def simple_transform():
-    pass

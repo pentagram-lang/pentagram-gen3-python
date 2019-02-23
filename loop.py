@@ -1,4 +1,8 @@
-def loop(func):
+from typing import Any
+from typing import Callable
+
+
+def loop(func: Callable[[str], Any]) -> None:
     try:
         while True:
             try:

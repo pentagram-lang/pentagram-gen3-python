@@ -6,7 +6,7 @@ from syntax_tree import Expression
 
 def interpret_expression(
     frame_stack: FrameStack, expression: Expression
-):
+) -> None:
     if not expression.terms:
         next_term(frame_stack)
     else:

@@ -3,7 +3,7 @@ from interpret.term import interpret_term
 from stack_machine import FrameStack
 
 
-def interpret_block(frame_stack: FrameStack):
+def interpret_block(frame_stack: FrameStack) -> None:
     instruction_pointer = (
         frame_stack.current.instruction_pointer
     )

@@ -11,7 +11,7 @@ def interpret(
     block: Block,
     expression_stack: ExpressionStack,
     environment: Environment,
-):
+) -> None:
     frame_stack = init_frame_stack(
         block, expression_stack, environment
     )

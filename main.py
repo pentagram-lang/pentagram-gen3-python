@@ -9,14 +9,14 @@ from stack_machine import ExpressionStack
 from syntax_tree import Block
 
 
-def main():
+def main() -> None:
     if len(sys.argv) == 2:
         main_run(sys.argv[1])
     else:
         main_loop()
 
 
-def main_run(source_filename):
+def main_run(source_filename: str) -> None:
     with open(source_filename, "r") as source_file:
         source_text = source_file.read()
     block = parse_block(source_text)
@@ -26,7 +26,7 @@ def main_run(source_filename):
     print(expression_stack.values)
 
 
-def main_loop():
+def main_loop() -> None:
     environment = base_environment().extend({})
 
     def statement_loop(statement_text):

@@ -28,9 +28,5 @@ def test_interpret():
     environment = test_environment()
     interpret(block, expression_stack, environment)
     assert expression_stack == ExpressionStack(
-        [
-            NumberValue(1),
-            NumberValue(2),
-            NumberValue(3),
-        ]
+        [NumberValue(1), NumberValue(2), NumberValue(3)]
     )
