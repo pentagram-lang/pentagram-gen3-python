@@ -10,9 +10,15 @@ from syntax_tree import Statement
 
 
 class Parsers(parsita.TextParsers, whitespace=None):
-    number_term = parsita.reg(r"[0-9]+") > (
-        lambda value: NumberTerm(int(value))
+    decimal_number_term = parsita.reg(r"[0-9]+") > (
+        lambda value: int(value)
     )
+    hex_number_term = (
+        parsita.lit("0x") >> parsita.reg(r"[0-9A-Fa-f]+")
+    ) > (lambda value: int(value, base=16))
+    number_term = (
+        hex_number_term | decimal_number_term
+    ) > NumberTerm
     identifier_term = (
         parsita.reg(r"[\S^\d]\S*") > IdentifierTerm
     )

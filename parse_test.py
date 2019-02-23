@@ -19,6 +19,7 @@ def parse_test(parser, text, expected_result):
 
 def number_term_test():
     yield "123", NumberTerm(123)
+    yield "0xFF", NumberTerm(255)
     yield "123.0", None
 
 
