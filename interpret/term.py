@@ -1,5 +1,7 @@
+from stack_machine import Call
 from stack_machine import FrameStack
 from stack_machine import NumberValue
+from stack_machine import Value
 from syntax_tree import IdentifierTerm
 from syntax_tree import NumberTerm
 from syntax_tree import Term
@@ -29,9 +31,14 @@ def interpret_identifier_term(
 ) -> None:
     expression_stack = frame_stack.current.expression_stack
     environment = frame_stack.current.environment
-    value = environment[term.name]
-    expression_stack.push(value)
-    next_term(frame_stack)
+    value_or_call = environment[term.name]
+    if isinstance(value_or_call, Value):
+        expression_stack.push(value_or_call)
+        next_term(frame_stack)
+    elif isinstance(value_or_call, Call):
+        value_or_call(frame_stack)
+    else:
+        assert False, value_or_call
 
 
 def next_term(frame_stack: FrameStack) -> None:

@@ -1,5 +1,5 @@
-import math
-
+from host.simple_call import sqrt
+from host.value import PI
 from interpret.term import interpret_identifier_term
 from interpret.term import interpret_number_term
 from interpret.term import next_term
@@ -41,16 +41,28 @@ def test_interpret_number_term():
     )
 
 
-def test_interpret_identifier_term():
-    term = IdentifierTerm("pi")
+def test_interpret_identifier_value_term():
+    term = IdentifierTerm(PI.name)
     expression_stack = ExpressionStack([])
+    frame_stack = init_test_frame_stack(
+        init_term_block(term), expression_stack
+    )
+    print(frame_stack.current.environment)
+    interpret_identifier_term(frame_stack, term)
+    assert frame_stack == FrameStack([])
+    assert expression_stack == ExpressionStack([PI.value])
+
+
+def test_interpret_identifier_call_term():
+    term = IdentifierTerm(sqrt.name)
+    expression_stack = ExpressionStack([NumberValue(16)])
     frame_stack = init_test_frame_stack(
         init_term_block(term), expression_stack
     )
     interpret_identifier_term(frame_stack, term)
     assert frame_stack == FrameStack([])
     assert expression_stack == ExpressionStack(
-        [NumberValue(math.pi)]
+        [NumberValue(4)]
     )
 
 
