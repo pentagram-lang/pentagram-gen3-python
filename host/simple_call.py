@@ -9,6 +9,7 @@ from interpret.term import next_term
 from stack_machine import Binding
 from stack_machine import Call
 from stack_machine import FrameStack
+from struct import pack
 from typing import Callable
 
 
@@ -28,7 +29,9 @@ class SimpleHostCall(Call):
         args = expression_stack.pop_many(
             self.parameter_count
         )
-        converted_args = [to_python(arg) for arg in args]
+        converted_args = [
+            to_python(arg) for arg in reversed(args)
+        ]
         results = self.func(*converted_args)
         if not isinstance(results, tuple):
             results = (results,)
@@ -44,6 +47,17 @@ def simple_call(name: str) -> Callable[[Callable], Binding]:
         return Binding(name, SimpleHostCall(func))
 
     return inner
+
+
+@simple_call("add")
+def add(blob: bytearray, number: int) -> bytearray:
+    blob += pack("I", number)
+    return blob
+
+
+@simple_call("nil-blob")
+def nil_blob() -> bytearray:
+    return bytearray()
 
 
 @simple_call("sqrt")

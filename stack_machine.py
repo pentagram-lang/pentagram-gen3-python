@@ -14,6 +14,11 @@ class Value:
 
 
 @dataclass
+class BlobValue(Value):
+    value: bytearray
+
+
+@dataclass
 class NumberValue(Value):
     value: int
 
