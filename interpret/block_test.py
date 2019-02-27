@@ -1,5 +1,6 @@
 from interpret.block import interpret_block
 from interpret.test import test_environment
+from numpy import int32
 from stack_machine import ExpressionStack
 from stack_machine import Frame
 from stack_machine import FrameStack
@@ -16,7 +17,7 @@ def test_interpret_block():
         [
             ExpressionStatement(
                 Expression(
-                    [NumberTerm(4)],
+                    [NumberTerm(int32(4))],
                     comment=None,
                     block=None,
                 )
@@ -41,5 +42,5 @@ def test_interpret_block():
     expected_frame_stack = FrameStack([])
     assert frame_stack == expected_frame_stack
     assert expression_stack == ExpressionStack(
-        [NumberValue(4)]
+        [NumberValue(int32(4))]
     )

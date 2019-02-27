@@ -6,6 +6,7 @@ from host.convert import from_python
 from host.convert import to_python
 from inspect import signature
 from interpret.term import next_term
+from numpy import int32
 from stack_machine import Binding
 from stack_machine import Call
 from stack_machine import FrameStack
@@ -61,5 +62,5 @@ def nil_blob() -> bytearray:
 
 
 @simple_call("sqrt")
-def sqrt(x: int) -> int:
-    return int(math.sqrt(x))
+def sqrt(x: int32) -> int32:
+    return int32(math.sqrt(x))

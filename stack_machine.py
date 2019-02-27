@@ -1,10 +1,13 @@
 from abc import ABC
 from abc import abstractmethod
 from dataclasses import dataclass
+from dataclasses import field
+from numpy import integer
 from syntax_tree import Block
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Type
 from typing import Union
 
 
@@ -20,7 +23,14 @@ class BlobValue(Value):
 
 @dataclass
 class NumberValue(Value):
-    value: int
+    value: integer
+    value_type: Type = field(init=False)
+
+    def __post_init__(self):
+        self.value_type = type(self.value)
+        assert issubclass(
+            self.value_type, integer
+        ), self.value_type
 
 
 @dataclass

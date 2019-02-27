@@ -1,6 +1,7 @@
 import parsita
 
 from loop import loop
+from numpy import int32
 from syntax_tree import Block
 from syntax_tree import Expression
 from syntax_tree import ExpressionStatement
@@ -11,11 +12,11 @@ from syntax_tree import Statement
 
 class Parsers(parsita.TextParsers, whitespace=None):
     decimal_number_term = parsita.reg(r"[0-9]+") > (
-        lambda value: int(value)
+        lambda value: int32(value)
     )
     hex_number_term = (
         parsita.lit("0x") >> parsita.reg(r"[0-9A-Fa-f]+")
-    ) > (lambda value: int(value, base=16))
+    ) > (lambda value: int32(int(value, base=16)))
     number_term = (
         hex_number_term | decimal_number_term
     ) > NumberTerm

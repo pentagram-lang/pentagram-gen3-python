@@ -5,6 +5,7 @@ from interpret.term import interpret_number_term
 from interpret.term import next_term
 from interpret.test import init_test_frame_stack
 from interpret.test import test_environment
+from numpy import int32
 from stack_machine import ExpressionStack
 from stack_machine import Frame
 from stack_machine import FrameStack
@@ -29,7 +30,7 @@ def init_term_block(term: Term) -> Block:
 
 
 def test_interpret_number_term():
-    term = NumberTerm(100)
+    term = NumberTerm(int32(100))
     expression_stack = ExpressionStack([])
     frame_stack = init_test_frame_stack(
         init_term_block(term), expression_stack
@@ -37,7 +38,7 @@ def test_interpret_number_term():
     interpret_number_term(frame_stack, term)
     assert frame_stack == FrameStack([])
     assert expression_stack == ExpressionStack(
-        [NumberValue(100)]
+        [NumberValue(int32(100))]
     )
 
 
@@ -55,14 +56,16 @@ def test_interpret_identifier_value_term():
 
 def test_interpret_identifier_call_term():
     term = IdentifierTerm(sqrt.name)
-    expression_stack = ExpressionStack([NumberValue(16)])
+    expression_stack = ExpressionStack(
+        [NumberValue(int32(16))]
+    )
     frame_stack = init_test_frame_stack(
         init_term_block(term), expression_stack
     )
     interpret_identifier_term(frame_stack, term)
     assert frame_stack == FrameStack([])
     assert expression_stack == ExpressionStack(
-        [NumberValue(4)]
+        [NumberValue(int32(4))]
     )
 
 
@@ -72,9 +75,9 @@ def test_interpret_next_term_base():
             ExpressionStatement(
                 Expression(
                     [
-                        NumberTerm(1),
-                        NumberTerm(2),
-                        NumberTerm(3),
+                        NumberTerm(int32(1)),
+                        NumberTerm(int32(2)),
+                        NumberTerm(int32(3)),
                     ],
                     comment=None,
                     block=None,
@@ -118,9 +121,9 @@ def test_interpret_next_term_end_expression():
             ExpressionStatement(
                 Expression(
                     [
-                        NumberTerm(1),
-                        NumberTerm(2),
-                        NumberTerm(3),
+                        NumberTerm(int32(1)),
+                        NumberTerm(int32(2)),
+                        NumberTerm(int32(3)),
                     ],
                     comment=None,
                     block=None,
@@ -129,9 +132,9 @@ def test_interpret_next_term_end_expression():
             ExpressionStatement(
                 Expression(
                     [
-                        NumberTerm(4),
-                        NumberTerm(5),
-                        NumberTerm(6),
+                        NumberTerm(int32(4)),
+                        NumberTerm(int32(5)),
+                        NumberTerm(int32(6)),
                     ],
                     comment=None,
                     block=None,
@@ -178,9 +181,9 @@ def test_interpret_next_term_empty_expression():
             ExpressionStatement(
                 Expression(
                     [
-                        NumberTerm(4),
-                        NumberTerm(5),
-                        NumberTerm(6),
+                        NumberTerm(int32(4)),
+                        NumberTerm(int32(5)),
+                        NumberTerm(int32(6)),
                     ],
                     comment=None,
                     block=None,
@@ -224,9 +227,9 @@ def test_interpret_next_term_end_block():
             ExpressionStatement(
                 Expression(
                     [
-                        NumberTerm(1),
-                        NumberTerm(2),
-                        NumberTerm(3),
+                        NumberTerm(int32(1)),
+                        NumberTerm(int32(2)),
+                        NumberTerm(int32(3)),
                     ],
                     comment=None,
                     block=None,
@@ -279,9 +282,9 @@ def test_interpret_next_term_end_last_block():
             ExpressionStatement(
                 Expression(
                     [
-                        NumberTerm(1),
-                        NumberTerm(2),
-                        NumberTerm(3),
+                        NumberTerm(int32(1)),
+                        NumberTerm(int32(2)),
+                        NumberTerm(int32(3)),
                     ],
                     comment=None,
                     block=None,

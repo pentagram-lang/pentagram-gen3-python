@@ -1,5 +1,6 @@
 import parsita
 
+from numpy import int32
 from parse import Parsers
 from syntax_tree import Block
 from syntax_tree import Expression
@@ -12,14 +13,16 @@ from test import params
 def parse_test(parser, text, expected_result):
     result = parser.parse(text)
     if expected_result is not None:
+        if hasattr(expected_result, "value_type"):
+            print(expected_result.value_type)
         assert result.or_die() == expected_result
     else:
         assert isinstance(result, parsita.Failure)
 
 
 def number_term_test():
-    yield "123", NumberTerm(123)
-    yield "0xFF", NumberTerm(255)
+    yield "123", NumberTerm(int32(123))
+    yield "0xFF", NumberTerm(int32(255))
     yield "123.0", None
 
 
@@ -41,7 +44,11 @@ def test_identifier_term(text, expected_result):
 
 def expression_test():
     yield "1 2 3", Expression(
-        [NumberTerm(1), NumberTerm(2), NumberTerm(3)],
+        [
+            NumberTerm(int32(1)),
+            NumberTerm(int32(2)),
+            NumberTerm(int32(3)),
+        ],
         comment=None,
         block=None,
     )
@@ -55,7 +62,7 @@ def expression_test():
         block=None,
     )
     yield "123 abc", Expression(
-        [NumberTerm(123), IdentifierTerm("abc")],
+        [NumberTerm(int32(123)), IdentifierTerm("abc")],
         comment=None,
         block=None,
     )
@@ -72,7 +79,7 @@ def block_test():
             ExpressionStatement(
                 Expression(
                     [
-                        NumberTerm(123),
+                        NumberTerm(int32(123)),
                         IdentifierTerm("abc"),
                     ],
                     comment=None,
@@ -82,7 +89,7 @@ def block_test():
             ExpressionStatement(
                 Expression(
                     [
-                        NumberTerm(456),
+                        NumberTerm(int32(456)),
                         IdentifierTerm("def"),
                     ],
                     comment=None,

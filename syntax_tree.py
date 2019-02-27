@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from dataclasses import field
+from numpy import integer
 from typing import List
 from typing import Optional
+from typing import Type
 
 
 @dataclass
@@ -10,7 +13,14 @@ class Term:
 
 @dataclass
 class NumberTerm(Term):
-    value: int
+    value: integer
+    value_type: Type = field(init=False)
+
+    def __post_init__(self):
+        self.value_type = type(self.value)
+        assert issubclass(
+            self.value_type, integer
+        ), self.value_type
 
 
 @dataclass

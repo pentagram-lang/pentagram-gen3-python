@@ -22,7 +22,7 @@
     "python.linting.pydocstyleEnabled": false,
     "python.linting.pylamaEnabled": false,
     "python.linting.pylintEnabled": false,
-    "python.pythonPath": ".direnv/python-venv-3.7.2/bin/python",
+    "python.pythonPath": ".direnv/python-venv-3.7.2+/bin/python",
     "python.terminal.activateEnvironment": false,
     "python.unitTest.unittestEnabled": false,
     "python.unitTest.pyTestEnabled": false,

@@ -1,3 +1,4 @@
+from numpy import integer
 from stack_machine import BlobValue
 from stack_machine import NumberValue
 from stack_machine import Value
@@ -9,7 +10,7 @@ def from_python(value: Any) -> Value:
         return value
     elif isinstance(value, bytearray):
         return BlobValue(value)
-    elif isinstance(value, int):
+    elif isinstance(value, integer):
         return NumberValue(value)
     else:
         assert False, value

@@ -3,6 +3,7 @@ from host.simple_call import nil_blob
 from host.simple_call import sqrt
 from interpret import interpret
 from interpret.test import test_environment
+from numpy import int32
 from stack_machine import BlobValue
 from stack_machine import ExpressionStack
 from stack_machine import NumberValue
@@ -30,7 +31,10 @@ def call_test(binding, args, results):
 def test_add_blob():
     call_test(
         add,
-        [BlobValue(bytearray()), NumberValue(0x1234_5678)],
+        [
+            BlobValue(bytearray()),
+            NumberValue(int32(0x1234_5678)),
+        ],
         [BlobValue(bytearray(b"\x78\x56\x34\x12"))],
     )
 
@@ -40,4 +44,8 @@ def test_nil_blob():
 
 
 def test_sqrt():
-    call_test(sqrt, [NumberValue(4)], [NumberValue(2)])
+    call_test(
+        sqrt,
+        [NumberValue(int32(4))],
+        [NumberValue(int32(2))],
+    )

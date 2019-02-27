@@ -1,5 +1,6 @@
 from interpret.expression import interpret_expression
 from interpret.test import init_test_frame_stack
+from numpy import int32
 from stack_machine import ExpressionStack
 from stack_machine import FrameStack
 from stack_machine import NumberValue
@@ -15,7 +16,7 @@ def init_expression_block(expression: Expression) -> Block:
 
 def test_interpret_expression_some():
     expression = Expression(
-        [NumberTerm(100)], comment=None, block=None
+        [NumberTerm(int32(100))], comment=None, block=None
     )
     expression_stack = ExpressionStack([])
     frame_stack = init_test_frame_stack(
@@ -24,7 +25,7 @@ def test_interpret_expression_some():
     interpret_expression(frame_stack, expression)
     assert frame_stack == FrameStack([])
     assert expression_stack == ExpressionStack(
-        [NumberValue(100)]
+        [NumberValue(int32(100))]
     )
 
 
