@@ -7,10 +7,10 @@ from host.convert import to_python
 from inspect import signature
 from interpret.term import next_term
 from numpy import int32
+from numpy import integer
 from stack_machine import Binding
 from stack_machine import Call
 from stack_machine import FrameStack
-from struct import pack
 from typing import Callable
 
 
@@ -51,8 +51,8 @@ def simple_call(name: str) -> Callable[[Callable], Binding]:
 
 
 @simple_call("add")
-def add(blob: bytearray, number: int) -> bytearray:
-    blob += pack("I", number)
+def add(blob: bytearray, number: integer) -> bytearray:
+    blob += number.tobytes()
     return blob
 
 

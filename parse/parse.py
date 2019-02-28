@@ -1,7 +1,7 @@
 import parsita
 
 from loop import loop
-from numpy import int32
+from parse.parse_number import parse_number
 from syntax_tree import Block
 from syntax_tree import Expression
 from syntax_tree import ExpressionStatement
@@ -11,12 +11,22 @@ from syntax_tree import Statement
 
 
 class Parsers(parsita.TextParsers, whitespace=None):
-    decimal_number_term = parsita.reg(r"[0-9]+") > (
-        lambda value: int32(value)
+    number_term_suffix = parsita.reg(r"[iuf]?[bhwd]?")
+    decimal_number_term = parsita.reg(
+        r"[-0-9]+"
+    ) & number_term_suffix > (
+        lambda digits_and_suffix: parse_number(
+            10, *digits_and_suffix
+        )
     )
     hex_number_term = (
-        parsita.lit("0x") >> parsita.reg(r"[0-9A-Fa-f]+")
-    ) > (lambda value: int32(int(value, base=16)))
+        parsita.lit("0x") >> parsita.reg(r"[-0-9A-F]+")
+        & number_term_suffix
+    ) > (
+        lambda digits_and_suffix: parse_number(
+            16, *digits_and_suffix
+        )
+    )
     number_term = (
         hex_number_term | decimal_number_term
     ) > NumberTerm

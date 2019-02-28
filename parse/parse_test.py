@@ -1,7 +1,11 @@
 import parsita
 
 from numpy import int32
-from parse import Parsers
+from numpy import int64
+from numpy import uint8
+from numpy import uint16
+from numpy import uint32
+from parse.parse import Parsers
 from syntax_tree import Block
 from syntax_tree import Expression
 from syntax_tree import ExpressionStatement
@@ -20,29 +24,33 @@ def parse_test(parser, text, expected_result):
         assert isinstance(result, parsita.Failure)
 
 
-def number_term_test():
+def params_number_term():
     yield "123", NumberTerm(int32(123))
-    yield "0xFF", NumberTerm(int32(255))
+    yield "456d", NumberTerm(int64(456))
+    yield "0xFF", NumberTerm(uint8(255))
+    yield "0xF01D-AB1E", NumberTerm(uint32(0xF01DAB1E))
+    yield "0x0h", NumberTerm(uint16(0))
+    yield "0xab", None
     yield "123.0", None
 
 
-@params(number_term_test)
+@params(params_number_term)
 def test_number_term(text, expected_result):
     parse_test(Parsers.number_term, text, expected_result)
 
 
-def identifier_term_test():
+def params_identifier_term():
     yield "a-b-c", IdentifierTerm("a-b-c")
 
 
-@params(identifier_term_test)
+@params(params_identifier_term)
 def test_identifier_term(text, expected_result):
     parse_test(
         Parsers.identifier_term, text, expected_result
     )
 
 
-def expression_test():
+def params_expression():
     yield "1 2 3", Expression(
         [
             NumberTerm(int32(1)),
@@ -68,12 +76,12 @@ def expression_test():
     )
 
 
-@params(expression_test)
+@params(params_expression)
 def test_expression(text, expected_result):
     parse_test(Parsers.expression, text, expected_result)
 
 
-def block_test():
+def params_block():
     yield "123 abc\n456 def", Block(
         [
             ExpressionStatement(
@@ -100,6 +108,6 @@ def block_test():
     )
 
 
-@params(block_test)
+@params(params_block)
 def test_block(text, expected_result):
     parse_test(Parsers.block, text, expected_result)
