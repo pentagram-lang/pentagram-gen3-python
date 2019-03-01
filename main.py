@@ -23,7 +23,8 @@ def main_run(source_filename: str) -> None:
     expression_stack = ExpressionStack([])
     environment = base_environment()
     interpret(block, expression_stack, environment)
-    print(expression_stack.values)
+    if expression_stack.values:
+        print(expression_stack.values)
 
 
 def main_loop() -> None:

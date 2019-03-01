@@ -6,6 +6,7 @@ from host.convert import from_python
 from host.convert import to_python
 from inspect import signature
 from interpret.term import next_term
+from io import IOBase
 from numpy import int32
 from numpy import integer
 from stack_machine import Binding
@@ -34,7 +35,9 @@ class SimpleHostCall(Call):
             to_python(arg) for arg in reversed(args)
         ]
         results = self.func(*converted_args)
-        if not isinstance(results, tuple):
+        if results is None:
+            results = ()
+        elif not isinstance(results, tuple):
             results = (results,)
         converted_results = [
             from_python(result) for result in results
@@ -64,3 +67,8 @@ def nil_blob() -> bytearray:
 @simple_call("sqrt")
 def sqrt(x: int32) -> int32:
     return int32(math.sqrt(x))
+
+
+@simple_call("write")
+def write(stream: IOBase, blob: bytearray) -> None:
+    stream.write(blob)

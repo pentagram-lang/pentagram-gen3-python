@@ -2,6 +2,7 @@ from abc import ABC
 from abc import abstractmethod
 from dataclasses import dataclass
 from dataclasses import field
+from io import IOBase
 from numpy import integer
 from syntax_tree import Block
 from typing import Dict
@@ -31,6 +32,11 @@ class NumberValue(Value):
         assert issubclass(
             self.value_type, integer
         ), self.value_type
+
+
+@dataclass
+class StreamValue(Value):
+    value: IOBase
 
 
 @dataclass
