@@ -32,6 +32,12 @@ def params_number_term():
     yield "0x0h", NumberTerm(uint16(0))
     yield "0xab", None
     yield "123.0", None
+    yield "0x-AB", None
+    yield "0xA--B", None
+    yield "-0xAB", None
+    yield "0xAB-", None
+    yield "-1", None
+    yield "1-", None
 
 
 @params(params_number_term)
@@ -40,7 +46,16 @@ def test_number_term(text, expected_result):
 
 
 def params_identifier_term():
+    yield "abc", IdentifierTerm("abc")
     yield "a-b-c", IdentifierTerm("a-b-c")
+    yield "a-b-0", IdentifierTerm("a-b-0")
+    yield "a-1-c", IdentifierTerm("a-1-c")
+    yield "a1-c", IdentifierTerm("a1-c")
+    yield "1bc", None
+    yield "1-b-c", None
+    yield "-a-b-c", None
+    yield "a--b-c", None
+    yield "a-b-c-", None
 
 
 @params(params_identifier_term)
@@ -72,6 +87,26 @@ def params_expression():
     yield "123 abc", Expression(
         [NumberTerm(int32(123)), IdentifierTerm("abc")],
         comment=None,
+        block=None,
+    )
+    yield "123 abc ", Expression(
+        [NumberTerm(int32(123)), IdentifierTerm("abc")],
+        comment=None,
+        block=None,
+    )
+    yield "123 abc -- de", Expression(
+        [NumberTerm(int32(123)), IdentifierTerm("abc")],
+        comment=" de",
+        block=None,
+    )
+    yield "123 abc --de", Expression(
+        [NumberTerm(int32(123)), IdentifierTerm("abc")],
+        comment="de",
+        block=None,
+    )
+    yield "123 abc--de", Expression(
+        [NumberTerm(int32(123)), IdentifierTerm("abc")],
+        comment="de",
         block=None,
     )
 

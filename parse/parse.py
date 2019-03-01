@@ -10,17 +10,32 @@ from syntax_tree import NumberTerm
 from syntax_tree import Statement
 
 
+def hyphen_sequence_complex(
+    head: str, body: str
+) -> parsita.Parser[str, str]:
+    return parsita.reg(
+        rf"(?!-){head}(?:-?(?:(?!-){body})+)*"
+    )
+
+
+def hyphen_sequence_simple(
+    body: str
+) -> parsita.Parser[str, str]:
+    return hyphen_sequence_complex(body, body)
+
+
 class Parsers(parsita.TextParsers, whitespace=None):
     number_term_suffix = parsita.reg(r"[iuf]?[bhwd]?")
-    decimal_number_term = parsita.reg(
-        r"[-0-9]+"
+    decimal_number_term = hyphen_sequence_simple(
+        r"[0-9]"
     ) & number_term_suffix > (
         lambda digits_and_suffix: parse_number(
             10, *digits_and_suffix
         )
     )
     hex_number_term = (
-        parsita.lit("0x") >> parsita.reg(r"[-0-9A-F]+")
+        parsita.lit("0x")
+        >> hyphen_sequence_simple(r"[0-9A-F]+")
         & number_term_suffix
     ) > (
         lambda digits_and_suffix: parse_number(
@@ -31,13 +46,21 @@ class Parsers(parsita.TextParsers, whitespace=None):
         hex_number_term | decimal_number_term
     ) > NumberTerm
     identifier_term = (
-        parsita.reg(r"[\S^\d]\S*") > IdentifierTerm
+        hyphen_sequence_complex(r"(?!\d)\S", r"\S")
+        > IdentifierTerm
     )
     term = number_term | identifier_term
     space = parsita.reg(r" +")
-    expression = parsita.repsep(term, space) > (
-        lambda terms: Expression(
-            terms, comment=None, block=None
+    expression = parsita.repsep(term, space) << parsita.opt(
+        space
+    ) & (
+        parsita.opt(
+            parsita.lit("--") >> parsita.reg(r"[^\n]*")
+        )
+        > (lambda comment: comment[0] if comment else None)
+    ) > (
+        lambda terms_and_comment: Expression(
+            *terms_and_comment, block=None
         )
     )
     expression_statement = expression > ExpressionStatement

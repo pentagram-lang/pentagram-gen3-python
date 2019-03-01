@@ -38,3 +38,14 @@ def test_interpret_expression_none():
     interpret_expression(frame_stack, expression)
     assert frame_stack == FrameStack([])
     assert expression_stack == ExpressionStack([])
+
+
+def test_interpret_expression_comment_only():
+    expression = Expression([], comment="abc", block=None)
+    expression_stack = ExpressionStack([])
+    frame_stack = init_test_frame_stack(
+        init_expression_block(expression), expression_stack
+    )
+    interpret_expression(frame_stack, expression)
+    assert frame_stack == FrameStack([])
+    assert expression_stack == ExpressionStack([])

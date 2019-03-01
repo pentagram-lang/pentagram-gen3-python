@@ -172,6 +172,63 @@ def test_interpret_next_term_end_expression():
     assert frame_stack == expected_frame_stack
 
 
+def test_interpret_next_term_end_comment_expression():
+    block = Block(
+        [
+            ExpressionStatement(
+                Expression(
+                    [
+                        NumberTerm(int32(1)),
+                        NumberTerm(int32(2)),
+                        NumberTerm(int32(3)),
+                    ],
+                    comment="abc",
+                    block=None,
+                )
+            ),
+            ExpressionStatement(
+                Expression(
+                    [
+                        NumberTerm(int32(4)),
+                        NumberTerm(int32(5)),
+                        NumberTerm(int32(6)),
+                    ],
+                    comment=None,
+                    block=None,
+                )
+            ),
+        ]
+    )
+    frame_stack = FrameStack(
+        [
+            Frame(
+                InstructionPointer(
+                    block,
+                    statement_index=0,
+                    expression_term_index=2,
+                ),
+                ExpressionStack([]),
+                test_environment(),
+            )
+        ]
+    )
+    next_term(frame_stack)
+    expected_frame_stack = FrameStack(
+        [
+            Frame(
+                InstructionPointer(
+                    block,
+                    statement_index=1,
+                    expression_term_index=0,
+                ),
+                ExpressionStack([]),
+                test_environment(),
+            )
+        ]
+    )
+    assert frame_stack == expected_frame_stack
+
+
 def test_interpret_next_term_empty_expression():
     block = Block(
         [
