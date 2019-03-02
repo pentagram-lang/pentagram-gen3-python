@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:tacit-lang/tacit.git
+	branch = master
+	commit = 8f583daced1775d3ea8501515a05b82ad7e53fe4
+	parent = 9fbbd5bacff321c8bbd940c6047f584bb71bc15b
+	method = merge
+	cmdver = 0.4.0
