@@ -5,6 +5,7 @@ exclude = '''
   | \.git
   | \.vscode/\.ropeproject
   | __pycache__
+  | tmp
 )/
 '''
 line-length = 60

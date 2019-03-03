@@ -5,8 +5,10 @@ from interpret import interpret
 from loop import loop
 from parse import parse_block
 from parse import parse_statement
+from stack_machine import Environment
 from stack_machine import ExpressionStack
 from syntax_tree import Block
+from typing import Optional
 
 
 def main() -> None:
@@ -16,12 +18,16 @@ def main() -> None:
         main_loop()
 
 
-def main_run(source_filename: str) -> None:
+def main_run(
+    source_filename: str,
+    environment: Optional[Environment] = None,
+) -> None:
     with open(source_filename, "r") as source_file:
         source_text = source_file.read()
     block = parse_block(source_text)
     expression_stack = ExpressionStack([])
-    environment = base_environment()
+    if not environment:
+        environment = base_environment()
     interpret(block, expression_stack, environment)
     if expression_stack.values:
         print(expression_stack.values)

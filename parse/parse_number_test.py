@@ -17,6 +17,7 @@ def params_parse_number():
     yield 16, "123", "", uint16(0x123)
     yield 10, "1029", "w", int32(1029)
     yield 16, "00AB-CDEF", "", uint32(0x00ABCDEF)
+    yield 16, "0", "w", uint32(0)
     yield 16, "0", "id", int64(0)
     yield 10, "10-000-000-000", "ud", uint64(10_000_000_000)
 

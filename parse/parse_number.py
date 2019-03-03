@@ -22,7 +22,7 @@ def parse_number(
         signed = False
     elif suffix.endswith("h"):
         bits = 16
-    elif suffix.endswith("2"):
+    elif suffix.endswith("w"):
         bits = 32
     elif suffix.endswith("d"):
         bits = 64
