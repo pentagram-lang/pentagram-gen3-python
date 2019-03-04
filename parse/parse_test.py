@@ -5,6 +5,7 @@ from numpy import int64
 from numpy import uint8
 from numpy import uint16
 from numpy import uint32
+from numpy import uint64
 from parse.parse import Parsers
 from syntax_tree import Block
 from syntax_tree import Expression
@@ -29,8 +30,10 @@ def params_number_term():
     yield "456d", NumberTerm(int64(456))
     yield "0xFF", NumberTerm(uint8(255))
     yield "0xF01D-AB1E", NumberTerm(uint32(0xF01DAB1E))
-    yield "0x0h", NumberTerm(uint16(0))
+    yield "0x0xh", NumberTerm(uint16(0))
+    yield "0xDDxd", NumberTerm(uint64(0xDD))
     yield "0xab", None
+    yield "0x7f", None
     yield "123.0", None
     yield "0x-AB", None
     yield "0xA--B", None

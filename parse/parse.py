@@ -24,6 +24,16 @@ def hyphen_sequence_simple(
     return hyphen_sequence_complex(body, body)
 
 
+def opt_default(
+    parser: parsita.Parser[str, str], default
+) -> parsita.Parser[str, str]:
+    return parsita.opt(parser) > (
+        lambda result_list: result_list[0]
+        if result_list
+        else default
+    )
+
+
 class Parsers(parsita.TextParsers, whitespace=None):
     number_term_suffix = parsita.reg(r"[iuf]?[bhwd]?")
     decimal_number_term = hyphen_sequence_simple(
@@ -36,7 +46,9 @@ class Parsers(parsita.TextParsers, whitespace=None):
     hex_number_term = (
         parsita.lit("0x")
         >> hyphen_sequence_simple(r"[0-9A-F]+")
-        & number_term_suffix
+        & opt_default(
+            parsita.lit("x") >> number_term_suffix, ""
+        )
     ) > (
         lambda digits_and_suffix: parse_number(
             16, *digits_and_suffix
@@ -54,10 +66,10 @@ class Parsers(parsita.TextParsers, whitespace=None):
     expression = parsita.repsep(term, space) << parsita.opt(
         space
     ) & (
-        parsita.opt(
-            parsita.lit("--") >> parsita.reg(r"[^\n]*")
+        opt_default(
+            parsita.lit("--") >> parsita.reg(r"[^\n]*"),
+            None,
         )
-        > (lambda comment: comment[0] if comment else None)
     ) > (
         lambda terms_and_comment: Expression(
             *terms_and_comment, block=None
