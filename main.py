@@ -1,8 +1,10 @@
+#!/usr/bin/env python
 import sys
 
 from environment import base_environment
 from interpret import interpret
 from loop import loop
+from parse import Parsers
 from parse import parse_block
 from parse import parse_statement
 from stack_machine import Environment
@@ -13,7 +15,11 @@ from typing import Optional
 
 def main() -> None:
     if len(sys.argv) == 2:
-        main_run(sys.argv[1])
+        arg = sys.argv[1]
+        if arg == "--parse":
+            parse_loop()
+        else:
+            main_run(arg)
     else:
         main_loop()
 
@@ -44,6 +50,10 @@ def main_loop() -> None:
         return expression_stack.values
 
     loop(statement_loop)
+
+
+def parse_loop() -> None:
+    loop(Parsers.statement.parse)
 
 
 if __name__ == "__main__":

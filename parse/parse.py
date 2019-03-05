@@ -86,7 +86,3 @@ def parse_statement(text: str) -> Statement:
 
 def parse_block(text: str) -> Block:
     return Parsers.block.parse(text).or_die()
-
-
-if __name__ == "__main__":
-    loop(Parsers.statement.parse)
