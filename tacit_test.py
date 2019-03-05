@@ -1,7 +1,9 @@
+import stat
 import subprocess
 
 from environment import base_environment
 from main import main_run
+from os import chmod
 from os import symlink
 from os import unlink
 from os.path import exists
@@ -15,13 +17,13 @@ def test():
     make_tmp()
     write_flat_assembly()
     run_flat_nasm()
-    run_tacit()
+    interpret_tacit()
     flat_xxd = run_xxd("tmp/flat")
     tacit_xxd = run_xxd("tmp/tacit")
-    flat_xxd = flat_xxd[: len(tacit_xxd)]
     for flat_line, tacit_line in zip(flat_xxd, tacit_xxd):
         assert tacit_line == flat_line
     assert len(tacit_line) == len(flat_line)
+    assert run_tacit() == "Hello, Tacit world!\n"
 
 
 def write_flat_assembly():
@@ -144,7 +146,8 @@ def write_flat_assembly():
         prog_size   equ     $ - _start
 
         rodata:
-        msg         db      'Hello, Tacit world!', 10
+        msg         db      'Hello, Tacit world!'
+                    db      0x0A
         msg_len     equ     $ - msg
         rodata_size   equ     $ - rodata
     """
@@ -175,7 +178,7 @@ def make_tmp():
     symlink(tmp_path, "tmp", target_is_directory=True)
 
 
-def run_tacit():
+def interpret_tacit():
     with open("tmp/tacit", "wb") as tacit_output_file:
         test_environment = base_environment().extend(
             {"cout": StreamValue(tacit_output_file)}
@@ -191,3 +194,12 @@ def run_xxd(file_path):
     )
     result.check_returncode()
     return list(filter(bool, result.stdout.split("\n")))
+
+
+def run_tacit():
+    chmod("tmp/tacit", stat.S_IRWXU)
+    result = subprocess.run(
+        ["tmp/tacit"], stdout=subprocess.PIPE, text=True
+    )
+    result.check_returncode()
+    return result.stdout
