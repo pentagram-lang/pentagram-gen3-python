@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:tacit-lang/tacit.git
 	branch = master
-	commit = afd22ff85e6316628fdb725adc229e784565665d
-	parent = f2e148c2378f240d47a4dca7a7c7f55c75df7441
+	commit = 84827ffe98b29b3ac7721782039bea0fc62ac8b3
+	parent = 506b560db792e1107e71de0f2b4dd13353e147c1
 	method = merge
 	cmdver = 0.4.0
