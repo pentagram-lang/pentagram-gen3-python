@@ -5,8 +5,6 @@ from environment import base_environment
 from interpret import interpret
 from loop import loop
 from parse import Parsers
-from parse import parse_block
-from parse import parse_statement
 from stack_machine import Environment
 from stack_machine import ExpressionStack
 from syntax_tree import Block
@@ -30,7 +28,7 @@ def main_run(
 ) -> None:
     with open(source_filename, "r") as source_file:
         source_text = source_file.read()
-    block = parse_block(source_text)
+    block = Parsers.block.parse(source_text).or_die()
     expression_stack = ExpressionStack([])
     if not environment:
         environment = base_environment()
@@ -43,7 +41,9 @@ def main_loop() -> None:
     environment = base_environment().extend({})
 
     def statement_loop(statement_text):
-        statement = parse_statement(statement_text)
+        statement = Parsers.statement.parse(
+            statement_text
+        ).or_die()
         block = Block([statement])
         expression_stack = ExpressionStack([])
         interpret(block, expression_stack, environment)

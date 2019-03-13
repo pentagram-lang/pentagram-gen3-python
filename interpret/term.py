@@ -4,12 +4,10 @@ from stack_machine import NumberValue
 from stack_machine import Value
 from syntax_tree import IdentifierTerm
 from syntax_tree import NumberTerm
-from syntax_tree import Term
 
 
-def interpret_term(
-    frame_stack: FrameStack, term: Term
-) -> None:
+def interpret_term(frame_stack: FrameStack) -> None:
+    term = frame_stack.current.term
     if isinstance(term, NumberTerm):
         interpret_number_term(frame_stack, term)
     elif isinstance(term, IdentifierTerm):
@@ -42,20 +40,4 @@ def interpret_identifier_term(
 
 
 def next_term(frame_stack: FrameStack) -> None:
-    instruction_pointer = (
-        frame_stack.current.instruction_pointer
-    )
-    block = instruction_pointer.block
-    statement_index = instruction_pointer.statement_index
-    statement = block.statements[statement_index]
-    expression = statement.expression
-    expression_term_index = (
-        instruction_pointer.expression_term_index
-    )
-    if expression_term_index + 1 < len(expression.terms):
-        instruction_pointer.expression_term_index += 1
-    elif statement_index + 1 < len(block.statements):
-        instruction_pointer.statement_index += 1
-        instruction_pointer.expression_term_index = 0
-    else:
-        frame_stack.pop()
+    frame_stack.current.expression_term_index += 1

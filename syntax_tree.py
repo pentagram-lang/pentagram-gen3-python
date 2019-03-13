@@ -52,12 +52,12 @@ class ExpressionStatement(Statement):
 
 @dataclass
 class AssignmentStatement(Statement):
-    name: str
+    bindings: List[IdentifierTerm]
 
 
 @dataclass
 class ModificationStatement(Statement):
-    name: str
+    bindings: List[IdentifierTerm]
 
 
 @dataclass

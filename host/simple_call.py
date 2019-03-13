@@ -28,20 +28,23 @@ class SimpleHostCall(Call):
     def __call__(self, frame_stack: FrameStack) -> None:
         frame = frame_stack.current
         expression_stack = frame.expression_stack
-        args = expression_stack.pop_many(
-            self.parameter_count
-        )
-        converted_args = [
-            to_python(arg) for arg in reversed(args)
-        ]
-        results = self.func(*converted_args)
-        if results is None:
-            results = ()
-        elif not isinstance(results, tuple):
-            results = (results,)
-        converted_results = [
-            from_python(result) for result in results
-        ]
+        try:
+            args = expression_stack.pop_many(
+                self.parameter_count
+            )
+            converted_args = [
+                to_python(arg) for arg in reversed(args)
+            ]
+            results = self.func(*converted_args)
+            if results is None:
+                results = ()
+            elif not isinstance(results, tuple):
+                results = (results,)
+            converted_results = [
+                from_python(result) for result in results
+            ]
+        except Exception as e:
+            raise Exception(f"Error calling {self}") from e
         expression_stack.push_many(converted_results)
         next_term(frame_stack)
 

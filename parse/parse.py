@@ -1,13 +1,10 @@
 import parsita
 
-from loop import loop
-from parse.parse_number import parse_number
+from parse.number import parse_number
+from parse.statement import parse_statement
 from syntax_tree import Block
-from syntax_tree import Expression
-from syntax_tree import ExpressionStatement
 from syntax_tree import IdentifierTerm
 from syntax_tree import NumberTerm
-from syntax_tree import Statement
 
 
 def hyphen_sequence_complex(
@@ -63,7 +60,7 @@ class Parsers(parsita.TextParsers, whitespace=None):
     )
     term = number_term | identifier_term
     space = parsita.reg(r" +")
-    expression = parsita.repsep(term, space) << parsita.opt(
+    statement = parsita.repsep(term, space) << parsita.opt(
         space
     ) & (
         opt_default(
@@ -71,18 +68,8 @@ class Parsers(parsita.TextParsers, whitespace=None):
             None,
         )
     ) > (
-        lambda terms_and_comment: Expression(
+        lambda terms_and_comment: parse_statement(
             *terms_and_comment, block=None
         )
     )
-    expression_statement = expression > ExpressionStatement
-    statement = expression_statement
     block = parsita.repsep(statement, "\n") > Block
-
-
-def parse_statement(text: str) -> Statement:
-    return Parsers.statement.parse(text).or_die()
-
-
-def parse_block(text: str) -> Block:
-    return Parsers.block.parse(text).or_die()

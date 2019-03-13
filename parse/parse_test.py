@@ -7,6 +7,7 @@ from numpy import uint16
 from numpy import uint32
 from numpy import uint64
 from parse.parse import Parsers
+from syntax_tree import AssignmentStatement
 from syntax_tree import Block
 from syntax_tree import Expression
 from syntax_tree import ExpressionStatement
@@ -68,55 +69,89 @@ def test_identifier_term(text, expected_result):
     )
 
 
-def params_expression():
-    yield "1 2 3", Expression(
-        [
-            NumberTerm(int32(1)),
-            NumberTerm(int32(2)),
-            NumberTerm(int32(3)),
-        ],
-        comment=None,
-        block=None,
+def params_simple_expression():
+    yield "1 2 3", [
+        NumberTerm(int32(1)),
+        NumberTerm(int32(2)),
+        NumberTerm(int32(3)),
+    ]
+    yield "abc d e", [
+        IdentifierTerm("abc"),
+        IdentifierTerm("d"),
+        IdentifierTerm("e"),
+    ]
+    yield "123 abc", [
+        NumberTerm(int32(123)),
+        IdentifierTerm("abc"),
+    ]
+    yield "123 abc ", [
+        NumberTerm(int32(123)),
+        IdentifierTerm("abc"),
+    ]
+
+
+@params(params_simple_expression)
+def test_simple_expression(text, expected_terms):
+    expected_result = ExpressionStatement(
+        expression=Expression(
+            terms=expected_terms, comment=None, block=None
+        )
     )
-    yield "abc d e", Expression(
-        [
+    parse_test(Parsers.statement, text, expected_result)
+
+
+def params_comment_expression():
+    yield "123 abc -- de", [
+        NumberTerm(int32(123)),
+        IdentifierTerm("abc"),
+    ], " de"
+    yield "123 abc --de", [
+        NumberTerm(int32(123)),
+        IdentifierTerm("abc"),
+    ], "de"
+    yield "123 abc--de", [
+        NumberTerm(int32(123)),
+        IdentifierTerm("abc"),
+    ], "de"
+
+
+@params(params_comment_expression)
+def test_comment_expression(
+    text, expected_terms, expected_comment
+):
+    expected_result = ExpressionStatement(
+        expression=Expression(
+            terms=expected_terms,
+            comment=expected_comment,
+            block=None,
+        )
+    )
+    parse_test(Parsers.statement, text, expected_result)
+
+
+def params_assignment_statement():
+    yield "x = 1", AssignmentStatement(
+        expression=Expression(
+            [NumberTerm(int32(1))], comment=None, block=None
+        ),
+        bindings=[IdentifierTerm("x")],
+    )
+    yield "abc def  =    10   20", AssignmentStatement(
+        expression=Expression(
+            [NumberTerm(int32(10)), NumberTerm(int32(20))],
+            comment=None,
+            block=None,
+        ),
+        bindings=[
             IdentifierTerm("abc"),
-            IdentifierTerm("d"),
-            IdentifierTerm("e"),
+            IdentifierTerm("def"),
         ],
-        comment=None,
-        block=None,
-    )
-    yield "123 abc", Expression(
-        [NumberTerm(int32(123)), IdentifierTerm("abc")],
-        comment=None,
-        block=None,
-    )
-    yield "123 abc ", Expression(
-        [NumberTerm(int32(123)), IdentifierTerm("abc")],
-        comment=None,
-        block=None,
-    )
-    yield "123 abc -- de", Expression(
-        [NumberTerm(int32(123)), IdentifierTerm("abc")],
-        comment=" de",
-        block=None,
-    )
-    yield "123 abc --de", Expression(
-        [NumberTerm(int32(123)), IdentifierTerm("abc")],
-        comment="de",
-        block=None,
-    )
-    yield "123 abc--de", Expression(
-        [NumberTerm(int32(123)), IdentifierTerm("abc")],
-        comment="de",
-        block=None,
     )
 
 
-@params(params_expression)
-def test_expression(text, expected_result):
-    parse_test(Parsers.expression, text, expected_result)
+@params(params_assignment_statement)
+def test_assignment_statement(text, expected_result):
+    parse_test(Parsers.statement, text, expected_result)
 
 
 def params_block():

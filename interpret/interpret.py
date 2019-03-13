@@ -23,14 +23,16 @@ def init_frame_stack(
     block: Block,
     expression_stack: ExpressionStack,
     environment: Environment,
+    statement_index: int = 0,
+    expression_term_index: int = 0,
 ) -> FrameStack:
     return FrameStack(
         [
             Frame(
                 InstructionPointer(
                     block,
-                    statement_index=0,
-                    expression_term_index=0,
+                    statement_index,
+                    expression_term_index,
                 ),
                 expression_stack,
                 environment,

@@ -6,7 +6,7 @@ from numpy import uint8
 from numpy import uint16
 from numpy import uint32
 from numpy import uint64
-from parse.parse_number import parse_number
+from parse.number import parse_number
 from test import params
 
 
