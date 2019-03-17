@@ -1,16 +1,16 @@
 from interpret.block import interpret_block
-from stack_machine import Environment
-from stack_machine import ExpressionStack
-from stack_machine import Frame
-from stack_machine import FrameStack
-from stack_machine import InstructionPointer
-from syntax_tree import Block
+from machine import MachineEnvironment
+from machine import MachineExpressionStack
+from machine import MachineFrame
+from machine import MachineFrameStack
+from machine import MachineInstructionPointer
+from syntax import SyntaxBlock
 
 
 def interpret(
-    block: Block,
-    expression_stack: ExpressionStack,
-    environment: Environment,
+    block: SyntaxBlock,
+    expression_stack: MachineExpressionStack,
+    environment: MachineEnvironment,
 ) -> None:
     frame_stack = init_frame_stack(
         block, expression_stack, environment
@@ -20,19 +20,17 @@ def interpret(
 
 
 def init_frame_stack(
-    block: Block,
-    expression_stack: ExpressionStack,
-    environment: Environment,
+    block: SyntaxBlock,
+    expression_stack: MachineExpressionStack,
+    environment: MachineEnvironment,
     statement_index: int = 0,
-    expression_term_index: int = 0,
-) -> FrameStack:
-    return FrameStack(
+    term_index: int = 0,
+) -> MachineFrameStack:
+    return MachineFrameStack(
         [
-            Frame(
-                InstructionPointer(
-                    block,
-                    statement_index,
-                    expression_term_index,
+            MachineFrame(
+                MachineInstructionPointer(
+                    block, statement_index, term_index
                 ),
                 expression_stack,
                 environment,

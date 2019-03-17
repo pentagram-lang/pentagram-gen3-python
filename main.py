@@ -4,10 +4,9 @@ import sys
 from environment import base_environment
 from interpret import interpret
 from loop import loop
-from parse import Parsers
-from stack_machine import Environment
-from stack_machine import ExpressionStack
-from syntax_tree import Block
+from machine import MachineEnvironment
+from machine import MachineExpressionStack
+from parse import parse
 from typing import Optional
 
 
@@ -24,12 +23,12 @@ def main() -> None:
 
 def main_run(
     source_filename: str,
-    environment: Optional[Environment] = None,
+    environment: Optional[MachineEnvironment] = None,
 ) -> None:
     with open(source_filename, "r") as source_file:
         source_text = source_file.read()
-    block = Parsers.block.parse(source_text).or_die()
-    expression_stack = ExpressionStack([])
+    block = parse(source_text)
+    expression_stack = MachineExpressionStack([])
     if not environment:
         environment = base_environment()
     interpret(block, expression_stack, environment)
@@ -41,11 +40,8 @@ def main_loop() -> None:
     environment = base_environment().extend({})
 
     def statement_loop(statement_text):
-        statement = Parsers.statement.parse(
-            statement_text
-        ).or_die()
-        block = Block([statement])
-        expression_stack = ExpressionStack([])
+        block = parse(statement_text)
+        expression_stack = MachineExpressionStack([])
         interpret(block, expression_stack, environment)
         return expression_stack.values
 
@@ -53,7 +49,7 @@ def main_loop() -> None:
 
 
 def parse_loop() -> None:
-    loop(Parsers.statement.parse)
+    loop(parse)
 
 
 if __name__ == "__main__":

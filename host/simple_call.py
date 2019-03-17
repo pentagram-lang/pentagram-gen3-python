@@ -7,16 +7,16 @@ from host.convert import to_python
 from inspect import signature
 from interpret.term import next_term
 from io import IOBase
+from machine import MachineBinding
+from machine import MachineCall
+from machine import MachineFrameStack
 from numpy import int32
 from numpy import integer
-from stack_machine import Binding
-from stack_machine import Call
-from stack_machine import FrameStack
 from typing import Callable
 
 
 @dataclass
-class SimpleHostCall(Call):
+class SimpleHostCall(MachineCall):
     func: Callable
     parameter_count: int = field(init=False)
 
@@ -25,7 +25,9 @@ class SimpleHostCall(Call):
             signature(self.func).parameters
         )
 
-    def __call__(self, frame_stack: FrameStack) -> None:
+    def __call__(
+        self, frame_stack: MachineFrameStack
+    ) -> None:
         frame = frame_stack.current
         expression_stack = frame.expression_stack
         try:
@@ -49,9 +51,11 @@ class SimpleHostCall(Call):
         next_term(frame_stack)
 
 
-def simple_call(name: str) -> Callable[[Callable], Binding]:
-    def inner(func: Callable) -> Binding:
-        return Binding(name, SimpleHostCall(func))
+def simple_call(
+    name: str
+) -> Callable[[Callable], MachineBinding]:
+    def inner(func: Callable) -> MachineBinding:
+        return MachineBinding(name, SimpleHostCall(func))
 
     return inner
 

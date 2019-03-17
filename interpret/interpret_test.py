@@ -1,37 +1,32 @@
 from interpret import interpret
 from interpret.test import test_environment
+from machine import MachineExpressionStack
+from machine import MachineNumber
 from numpy import int32
-from stack_machine import ExpressionStack
-from stack_machine import NumberValue
-from syntax_tree import Block
-from syntax_tree import Expression
-from syntax_tree import ExpressionStatement
-from syntax_tree import NumberTerm
+from syntax import SyntaxBlock
+from syntax import SyntaxExpression
+from syntax import SyntaxNumber
 
 
 def test_interpret():
-    block = Block(
+    block = SyntaxBlock(
         [
-            ExpressionStatement(
-                Expression(
-                    [
-                        NumberTerm(int32(1)),
-                        NumberTerm(int32(2)),
-                        NumberTerm(int32(3)),
-                    ],
-                    comment=None,
-                    block=None,
-                )
+            SyntaxExpression(
+                [
+                    SyntaxNumber(int32(1)),
+                    SyntaxNumber(int32(2)),
+                    SyntaxNumber(int32(3)),
+                ]
             )
         ]
     )
-    expression_stack = ExpressionStack([])
+    expression_stack = MachineExpressionStack([])
     environment = test_environment()
     interpret(block, expression_stack, environment)
-    assert expression_stack == ExpressionStack(
+    assert expression_stack == MachineExpressionStack(
         [
-            NumberValue(int32(1)),
-            NumberValue(int32(2)),
-            NumberValue(int32(3)),
+            MachineNumber(int32(1)),
+            MachineNumber(int32(2)),
+            MachineNumber(int32(3)),
         ]
     )

@@ -2,13 +2,13 @@ import stat
 import subprocess
 
 from environment import base_environment
+from machine import MachineStream
 from main import main_run
 from os import chmod
 from os import symlink
 from os import unlink
 from os.path import exists
 from os.path import lexists
-from stack_machine import StreamValue
 from tempfile import mkdtemp
 from textwrap import dedent
 
@@ -181,7 +181,7 @@ def make_tmp():
 def interpret_tacit():
     with open("tmp/tacit", "wb") as tacit_output_file:
         test_environment = base_environment().extend(
-            {"cout": StreamValue(tacit_output_file)}
+            {"cout": MachineStream(tacit_output_file)}
         )
         main_run("tacit/main.tacit", test_environment)
 

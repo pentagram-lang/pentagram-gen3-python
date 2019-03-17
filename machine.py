@@ -4,10 +4,9 @@ from dataclasses import dataclass
 from dataclasses import field
 from io import IOBase
 from numpy import integer
-from syntax_tree import Block
-from syntax_tree import Expression
-from syntax_tree import Statement
-from syntax_tree import Term
+from syntax import SyntaxBlock
+from syntax import SyntaxStatement
+from syntax import SyntaxTerm
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -16,17 +15,17 @@ from typing import Union
 
 
 @dataclass
-class Value:
+class MachineValue:
     pass
 
 
 @dataclass
-class BlobValue(Value):
+class MachineBlob(MachineValue):
     value: bytearray
 
 
 @dataclass
-class NumberValue(Value):
+class MachineNumber(MachineValue):
     value: integer
     value_type: Type = field(init=False)
 
@@ -38,25 +37,25 @@ class NumberValue(Value):
 
 
 @dataclass
-class StreamValue(Value):
+class MachineStream(MachineValue):
     value: IOBase
 
 
 @dataclass
-class ExpressionStack:
-    values: List[Value]
+class MachineExpressionStack:
+    values: List[MachineValue]
 
-    def push(self, value: Value) -> None:
+    def push(self, value: MachineValue) -> None:
         self.values.append(value)
 
-    def push_many(self, values: List[Value]) -> None:
+    def push_many(self, values: List[MachineValue]) -> None:
         for value in values:
             self.push(value)
 
-    def pop(self) -> Value:
+    def pop(self) -> MachineValue:
         return self.values.pop()
 
-    def pop_many(self, count: int) -> Value:
+    def pop_many(self, count: int) -> MachineValue:
         assert len(self) >= count
         values = []
         for _ in range(count):
@@ -68,39 +67,46 @@ class ExpressionStack:
 
 
 @dataclass
-class Call(ABC):
+class MachineCall(ABC):
     @abstractmethod
-    def __call__(self, frame_stack: "FrameStack") -> None:
+    def __call__(
+        self, frame_stack: "MachineFrameStack"
+    ) -> None:
         pass
 
 
 @dataclass
-class Binding:
+class MachineBinding:
     name: str
-    value_or_call: Union[Value, Call]
+    value_or_call: Union[MachineValue, MachineCall]
 
     @property
     def value(self):
-        assert isinstance(self.value_or_call, Value)
+        assert isinstance(self.value_or_call, MachineValue)
         return self.value_or_call
 
     @property
     def call(self):
-        assert isinstance(self.value_or_call, Call)
+        assert isinstance(self.value_or_call, MachineCall)
         return self.value_or_call
 
 
 @dataclass
-class Environment:
-    bindings: Dict[str, Union[Value, Call]]
-    base: Optional["Environment"]
+class MachineEnvironment:
+    bindings: Dict[str, Union[MachineValue, MachineCall]]
+    base: Optional["MachineEnvironment"]
 
     def extend(
-        self, bindings: Dict[str, Union[Value, Call]]
-    ) -> "Environment":
-        return Environment(bindings, base=self)
+        self,
+        bindings: Dict[
+            str, Union[MachineValue, MachineCall]
+        ],
+    ) -> "MachineEnvironment":
+        return MachineEnvironment(bindings, base=self)
 
-    def __getitem__(self, key: str) -> Union[Value, Call]:
+    def __getitem__(
+        self, key: str
+    ) -> Union[MachineValue, MachineCall]:
         value = self.bindings.get(key)
         if value is None:
             if self.base:
@@ -111,14 +117,17 @@ class Environment:
             return value
 
     def __setitem__(
-        self, key: str, value: Union[Value, Call]
+        self,
+        key: str,
+        value: Union[MachineValue, MachineCall],
     ) -> None:
         self.bindings[key] = value
 
+    @staticmethod
     def from_bindings(
-        bindings: List[Binding]
-    ) -> "Environment":
-        return Environment(
+        bindings: List[MachineBinding]
+    ) -> "MachineEnvironment":
+        return MachineEnvironment(
             bindings={
                 binding.name: binding.value_or_call
                 for binding in bindings
@@ -128,20 +137,20 @@ class Environment:
 
 
 @dataclass
-class InstructionPointer:
-    block: Block
+class MachineInstructionPointer:
+    block: SyntaxBlock
     statement_index: int
-    expression_term_index: int
+    term_index: int
 
 
 @dataclass
-class Frame:
-    instruction_pointer: InstructionPointer
-    expression_stack: ExpressionStack
-    environment: Environment
+class MachineFrame:
+    instruction_pointer: MachineInstructionPointer
+    expression_stack: MachineExpressionStack
+    environment: MachineEnvironment
 
     @property
-    def block(self) -> Block:
+    def block(self) -> SyntaxBlock:
         return self.instruction_pointer.block
 
     @property
@@ -153,37 +162,27 @@ class Frame:
         self.instruction_pointer.statement_index = value
 
     @property
-    def statement(self) -> Statement:
+    def statement(self) -> SyntaxStatement:
         return self.block.statements[self.statement_index]
 
     @property
-    def expression(self) -> Expression:
-        return self.statement.expression
+    def term_index(self) -> int:
+        return self.instruction_pointer.term_index
+
+    @term_index.setter
+    def term_index(self, value) -> int:
+        self.instruction_pointer.term_index = value
 
     @property
-    def expression_term_index(self) -> int:
-        return (
-            self.instruction_pointer.expression_term_index
-        )
-
-    @expression_term_index.setter
-    def expression_term_index(self, value) -> int:
-        self.instruction_pointer.expression_term_index = (
-            value
-        )
-
-    @property
-    def term(self) -> Term:
-        return self.expression.terms[
-            self.expression_term_index
-        ]
+    def term(self) -> SyntaxTerm:
+        return self.statement.terms[self.term_index]
 
 
 @dataclass
-class FrameStack:
-    frames: List[Frame]
+class MachineFrameStack:
+    frames: List[MachineFrame]
 
-    def push(self, frame: Frame) -> None:
+    def push(self, frame: MachineFrame) -> None:
         self.frames.append(frame)
 
     def pop(self) -> None:
@@ -196,6 +195,6 @@ class FrameStack:
         return len(self.frames)
 
     @property
-    def current(self) -> Frame:
+    def current(self) -> MachineFrame:
         assert self.frames
         return self.frames[-1]

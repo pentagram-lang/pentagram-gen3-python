@@ -1,64 +1,62 @@
-from syntax_tree import AssignmentStatement
-from syntax_tree import Block
-from syntax_tree import Comment
-from syntax_tree import Expression
-from syntax_tree import ExpressionStatement
-from syntax_tree import IdentifierTerm
-from syntax_tree import Statement
-from syntax_tree import Term
+from parse.group import Group
+from parse.group import GroupComment
+from parse.group import GroupIdentifier
+from parse.group import GroupNumber
+from parse.group import GroupTerm
+from syntax import SyntaxAssignment
+from syntax import SyntaxBlock
+from syntax import SyntaxComment
+from syntax import SyntaxExpression
+from syntax import SyntaxIdentifier
+from syntax import SyntaxNumber
+from syntax import SyntaxStatement
+from syntax import SyntaxTerm
 from typing import List
-from typing import Optional
 
 
-def parse_statement(
-    terms: List[Term],
-    comment: Optional[Comment],
-    block: Optional[Block],
-) -> Statement:
-    bindings = []
+def parse_statements_block(group: Group) -> SyntaxBlock:
+    return SyntaxBlock(
+        [
+            parse_one_statement(line.terms)
+            for line in group.lines
+        ]
+    )
+
+
+def parse_one_statement(
+    terms: List[GroupTerm],
+) -> SyntaxStatement:
+    bindings: List[SyntaxIdentifier] = []
     for term in terms:
-        if isinstance(term, IdentifierTerm):
+        if isinstance(term, GroupIdentifier):
             if term.name == "=":
-                return parse_assignment_statement(
-                    bindings,
-                    terms[len(bindings) + 1 :],
-                    comment,
-                    block,
+                return SyntaxAssignment(
+                    terms=parse_terms(
+                        terms[len(bindings) + 1 :]
+                    ),
+                    bindings=bindings,
                 )
             else:
-                bindings.append(term)
+                bindings.append(SyntaxIdentifier(term.name))
         else:
             break
-    return parse_expression_statement(terms, comment, block)
+    return SyntaxExpression(parse_terms(terms))
 
 
-def parse_expression_statement(
-    terms: List[Term],
-    comment: Optional[Comment],
-    block: Optional[Block],
-) -> ExpressionStatement:
-    return ExpressionStatement(
-        parse_expression(terms, comment, block)
-    )
+def parse_terms(
+    terms: List[GroupTerm],
+) -> List[SyntaxTerm]:
+    return [parse_one_term(term) for term in terms]
 
 
-def parse_expression(
-    terms: List[Term],
-    comment: Optional[Comment],
-    block: Optional[Block],
-) -> Expression:
-    return Expression(
-        terms=terms, comment=comment, block=block
-    )
-
-
-def parse_assignment_statement(
-    bindings: List[IdentifierTerm],
-    terms: List[Term],
-    comment: Optional[Comment],
-    block: Optional[Block],
-) -> AssignmentStatement:
-    return AssignmentStatement(
-        expression=parse_expression(terms, comment, block),
-        bindings=bindings,
-    )
+def parse_one_term(term: GroupTerm) -> SyntaxTerm:
+    if isinstance(term, GroupNumber):
+        return SyntaxNumber(term.value)
+    elif isinstance(term, GroupIdentifier):
+        return SyntaxIdentifier(term.name)
+    elif isinstance(term, GroupComment):
+        return SyntaxComment(term.text)
+    elif isinstance(term, Group):
+        return parse_statements_block(term)
+    else:
+        assert False, term

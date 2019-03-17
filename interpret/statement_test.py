@@ -2,73 +2,61 @@ from interpret.interpret import init_frame_stack
 from interpret.statement import interpret_statement
 from interpret.test import init_test_frame_stack
 from interpret.test import test_environment
+from machine import MachineExpressionStack
+from machine import MachineNumber
 from numpy import int32
-from stack_machine import ExpressionStack
-from stack_machine import NumberValue
-from syntax_tree import AssignmentStatement
-from syntax_tree import Block
-from syntax_tree import Expression
-from syntax_tree import ExpressionStatement
-from syntax_tree import IdentifierTerm
-from syntax_tree import NumberTerm
-from syntax_tree import Statement
+from syntax import SyntaxAssignment
+from syntax import SyntaxBlock
+from syntax import SyntaxExpression
+from syntax import SyntaxIdentifier
+from syntax import SyntaxNumber
+from syntax import SyntaxStatement
 
 
-def init_statement_block(statement: Statement) -> Block:
-    return Block([statement])
+def init_statement_block(
+    statement: SyntaxStatement
+) -> SyntaxBlock:
+    return SyntaxBlock([statement])
 
 
-def test_interpret_expression_statement_enter():
-    statement = ExpressionStatement(
-        Expression(
-            [NumberTerm(int32(100))],
-            comment=None,
-            block=None,
-        )
-    )
+def test_interpret_expression_enter():
+    statement = SyntaxExpression([SyntaxNumber(int32(100))])
     frame_stack = init_test_frame_stack(
-        init_statement_block(statement), ExpressionStack([])
+        init_statement_block(statement),
+        MachineExpressionStack([]),
     )
     interpret_statement(frame_stack)
     assert frame_stack == init_test_frame_stack(
         init_statement_block(statement),
-        ExpressionStack([NumberValue(int32(100))]),
-        expression_term_index=1,
+        MachineExpressionStack([MachineNumber(int32(100))]),
+        term_index=1,
     )
 
 
-def test_interpret_expression_statement_exit():
-    statement = ExpressionStatement(
-        Expression(
-            [NumberTerm(int32(100))],
-            comment=None,
-            block=None,
-        )
-    )
+def test_interpret_expression_exit():
+    statement = SyntaxExpression([SyntaxNumber(int32(100))])
     frame_stack = init_test_frame_stack(
         init_statement_block(statement),
-        ExpressionStack([NumberValue(int32(100))]),
-        expression_term_index=1,
+        MachineExpressionStack([MachineNumber(int32(100))]),
+        term_index=1,
     )
     interpret_statement(frame_stack)
     assert frame_stack == init_test_frame_stack(
         init_statement_block(statement),
-        ExpressionStack([NumberValue(int32(100))]),
+        MachineExpressionStack([MachineNumber(int32(100))]),
         statement_index=1,
-        expression_term_index=0,
+        term_index=0,
     )
 
 
-def test_interpret_assignment_statement_1_enter():
-    statement = AssignmentStatement(
-        expression=Expression(
-            [NumberTerm(int32(3))], comment=None, block=None
-        ),
-        bindings=[IdentifierTerm("x")],
+def test_interpret_assignment_1_enter():
+    statement = SyntaxAssignment(
+        terms=[SyntaxNumber(int32(3))],
+        bindings=[SyntaxIdentifier("x")],
     )
     frame_stack = init_test_frame_stack(
         init_statement_block(statement),
-        ExpressionStack([NumberValue(int32(4))]),
+        MachineExpressionStack([MachineNumber(int32(4))]),
     )
     interpret_statement(frame_stack)
     assert len(frame_stack) == 2
@@ -82,59 +70,54 @@ def test_interpret_assignment_statement_1_enter():
     )
     assert (
         frame_stack.current.expression_stack
-        == ExpressionStack([NumberValue(int32(3))])
+        == MachineExpressionStack([MachineNumber(int32(3))])
     )
 
 
-def test_interpret_assignment_statement_1_exit():
-    statement = AssignmentStatement(
-        expression=Expression(
-            [NumberTerm(int32(3))], comment=None, block=None
-        ),
-        bindings=[IdentifierTerm("x")],
+def test_interpret_assignment_1_exit():
+    statement = SyntaxAssignment(
+        terms=[SyntaxNumber(int32(3))],
+        bindings=[SyntaxIdentifier("x")],
     )
     frame_stack = init_test_frame_stack(
         init_statement_block(statement),
-        ExpressionStack([NumberValue(int32(4))]),
+        MachineExpressionStack([MachineNumber(int32(4))]),
     )
     interpret_statement(frame_stack)
     interpret_statement(frame_stack)
     assert frame_stack == init_frame_stack(
         init_statement_block(statement),
-        ExpressionStack([NumberValue(int32(4))]),
-        test_environment({"x": NumberValue(int32(3))}),
+        MachineExpressionStack([MachineNumber(int32(4))]),
+        test_environment({"x": MachineNumber(int32(3))}),
         statement_index=1,
     )
 
 
-def test_interpret_assignment_statement_2_exit():
-    statement = AssignmentStatement(
-        expression=Expression(
-            [
-                NumberTerm(int32(300)),
-                NumberTerm(int32(400)),
-            ],
-            comment=None,
-            block=None,
-        ),
+def test_interpret_assignment_2_exit():
+    statement = SyntaxAssignment(
+        terms=[
+            SyntaxNumber(int32(300)),
+            SyntaxNumber(int32(400)),
+        ],
         bindings=[
-            IdentifierTerm("abc"),
-            IdentifierTerm("def"),
+            SyntaxIdentifier("abc"),
+            SyntaxIdentifier("def"),
         ],
     )
     frame_stack = init_test_frame_stack(
-        init_statement_block(statement), ExpressionStack([])
+        init_statement_block(statement),
+        MachineExpressionStack([]),
     )
     interpret_statement(frame_stack)
     interpret_statement(frame_stack)
     interpret_statement(frame_stack)
     assert frame_stack == init_frame_stack(
         init_statement_block(statement),
-        ExpressionStack([]),
+        MachineExpressionStack([]),
         test_environment(
             {
-                "abc": NumberValue(int32(300)),
-                "def": NumberValue(int32(400)),
+                "abc": MachineNumber(int32(300)),
+                "def": MachineNumber(int32(400)),
             }
         ),
         statement_index=1,

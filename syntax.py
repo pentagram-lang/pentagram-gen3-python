@@ -7,12 +7,12 @@ from typing import Type
 
 
 @dataclass
-class Term:
+class SyntaxTerm:
     pass
 
 
 @dataclass
-class NumberTerm(Term):
+class SyntaxNumber(SyntaxTerm):
     value: integer
     value_type: Type = field(init=False)
 
@@ -24,42 +24,40 @@ class NumberTerm(Term):
 
 
 @dataclass
-class IdentifierTerm(Term):
+class SyntaxIdentifier(SyntaxTerm):
     name: str
 
 
 @dataclass
-class Comment:
+class SyntaxComment(SyntaxTerm):
     text: str
 
 
 @dataclass
-class Expression:
-    terms: List[Term]
-    comment: Optional[Comment]
-    block: Optional["Block"]
+class SyntaxBlock(SyntaxTerm):
+    statements: List["SyntaxStatement"]
 
 
 @dataclass
-class Statement:
-    expression: Expression
+class SyntaxStatement:
+    terms: List[SyntaxTerm]
 
 
 @dataclass
-class ExpressionStatement(Statement):
+class SyntaxExpression(SyntaxStatement):
     pass
 
 
 @dataclass
-class AssignmentStatement(Statement):
-    bindings: List[IdentifierTerm]
+class SyntaxBinding(SyntaxStatement):
+    bindings: List[SyntaxIdentifier]
 
 
 @dataclass
-class ModificationStatement(Statement):
-    bindings: List[IdentifierTerm]
+class SyntaxAssignment(SyntaxBinding):
+    pass
 
 
 @dataclass
-class Block:
-    statements: List[Statement]
+class SyntaxModification(SyntaxBinding):
+    pass
