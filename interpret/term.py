@@ -1,7 +1,10 @@
 from machine import MachineCall
+from machine import MachineFrame
 from machine import MachineFrameStack
+from machine import MachineInstructionPointer
 from machine import MachineNumber
 from machine import MachineValue
+from syntax import SyntaxBlock
 from syntax import SyntaxComment
 from syntax import SyntaxIdentifier
 from syntax import SyntaxNumber
@@ -15,6 +18,8 @@ def interpret_term(frame_stack: MachineFrameStack) -> None:
         interpret_identifier_term(frame_stack, term)
     elif isinstance(term, SyntaxComment):
         next_term(frame_stack)
+    elif isinstance(term, SyntaxBlock):
+        interpret_block_term(frame_stack, term)
     else:
         assert False, term
 
@@ -41,6 +46,21 @@ def interpret_identifier_term(
         value_or_call(frame_stack)
     else:
         assert False, value_or_call
+
+
+def interpret_block_term(
+    frame_stack: MachineFrameStack, block: SyntaxBlock
+) -> None:
+    next_term(frame_stack)
+    frame_stack.push(
+        MachineFrame(
+            MachineInstructionPointer(
+                block, statement_index=0, term_index=0
+            ),
+            frame_stack.current.expression_stack,
+            frame_stack.current.environment.extend(),
+        )
+    )
 
 
 def next_term(frame_stack: MachineFrameStack) -> None:

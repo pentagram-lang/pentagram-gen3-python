@@ -7,6 +7,8 @@ def loop(func: Callable[[str], Any]) -> None:
         while True:
             try:
                 text = input("> ")
+                while text.endswith(" "):
+                    text += f"\n{input('- ')}"
             except KeyboardInterrupt:
                 print()
                 continue

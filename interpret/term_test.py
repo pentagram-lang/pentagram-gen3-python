@@ -2,7 +2,10 @@ from host.simple_call import sqrt
 from host.value import PI
 from interpret.term import interpret_term
 from interpret.test import init_test_frame_stack
+from interpret.test import test_environment
 from machine import MachineExpressionStack
+from machine import MachineFrame
+from machine import MachineInstructionPointer
 from machine import MachineNumber
 from numpy import int32
 from syntax import SyntaxBlock
@@ -73,4 +76,35 @@ def test_interpret_comment():
         init_term_block(term),
         MachineExpressionStack([MachineNumber(int32(10))]),
         term_index=1,
+    )
+
+
+def test_interpret_block():
+    term = init_term_block(SyntaxNumber(int32(2)))
+    expression_stack = MachineExpressionStack(
+        [MachineNumber(int32(10))]
+    )
+    frame_stack = init_test_frame_stack(
+        init_term_block(term), expression_stack
+    )
+    interpret_term(frame_stack)
+    assert len(frame_stack) == 2
+    assert (
+        frame_stack.frames[0]
+        == init_test_frame_stack(
+            init_term_block(term),
+            MachineExpressionStack(
+                [MachineNumber(int32(10))]
+            ),
+            term_index=1,
+        ).frames[0]
+    )
+    assert frame_stack.frames[1] == MachineFrame(
+        instruction_pointer=MachineInstructionPointer(
+            block=term, statement_index=0, term_index=0
+        ),
+        environment=test_environment().extend(),
+        expression_stack=MachineExpressionStack(
+            [MachineNumber(int32(10))]
+        ),
     )
