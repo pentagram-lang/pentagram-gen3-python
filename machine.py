@@ -104,6 +104,14 @@ class MachineEnvironment:
     ) -> "MachineEnvironment":
         return MachineEnvironment(bindings or {}, base=self)
 
+    def __contains__(self, key: str) -> bool:
+        if key in self.bindings:
+            return True
+        elif self.base:
+            return key in self.base
+        else:
+            return False
+
     def __getitem__(
         self, key: str
     ) -> Union[MachineValue, MachineCall]:
