@@ -49,6 +49,7 @@ class GroupLine:
 
 def parse_group(lines: List[WordLine]) -> Group:
     groups = [Group([])]
+    substantial_indent_level = -1
 
     def group_end(indent_level):
         while indent_level < len(groups) - 1:
@@ -56,19 +57,21 @@ def parse_group(lines: List[WordLine]) -> Group:
 
     for line in lines:
         if not line.terms:
-            indent_level = len(groups) - 1
+            indent_level = substantial_indent_level + 1
         elif len(line.terms) == 1 and isinstance(
             line.terms[0], WordComment
         ):
             indent_level = min(
-                len(groups) - 1, line.indent // 2
+                substantial_indent_level + 1,
+                line.indent // 2
             )
         else:
             assert line.indent % 2 == 0, line
             indent_level = line.indent // 2
             assert indent_level <= len(groups), line
-            if indent_level == len(groups):
-                groups.append(Group([]))
+            substantial_indent_level = indent_level
+        if indent_level == len(groups):
+            groups.append(Group([]))
         group_end(indent_level)
         groups[-1].lines.append(
             GroupLine(parse_group_terms(line.terms))

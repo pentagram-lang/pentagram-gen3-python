@@ -56,7 +56,7 @@ class MachineExpressionStack:
         return self.values.pop()
 
     def pop_many(self, count: int) -> MachineValue:
-        assert len(self) >= count
+        assert len(self) >= count, (self, count)
         values = []
         for _ in range(count):
             values.append(self.values.pop())
