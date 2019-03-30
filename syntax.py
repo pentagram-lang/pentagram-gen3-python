@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from dataclasses import field
 from numpy import integer
 from typing import List
-from typing import Optional
 from typing import Type
 
 
@@ -61,3 +60,18 @@ class SyntaxAssignment(SyntaxBinding):
 @dataclass
 class SyntaxModification(SyntaxBinding):
     pass
+
+
+@dataclass
+class SyntaxMethodDefinition(SyntaxStatement):
+    binding: SyntaxIdentifier
+    definition_block: SyntaxBlock
+
+    def __init__(
+        self,
+        binding: SyntaxIdentifier,
+        definition: SyntaxStatement,
+    ):
+        super().__init__(terms=[])
+        self.binding = binding
+        self.definition_block = SyntaxBlock([definition])

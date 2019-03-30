@@ -1,9 +1,11 @@
+from guest.call import GuestCall
 from interpret.term import interpret_term
 from machine import MachineExpressionStack
 from machine import MachineFrame
 from machine import MachineFrameStack
 from syntax import SyntaxAssignment
 from syntax import SyntaxExpression
+from syntax import SyntaxMethodDefinition
 
 
 def interpret_statement(
@@ -28,6 +30,8 @@ def interpret_statement_enter(
         pass
     elif isinstance(statement, SyntaxAssignment):
         interpret_assignment_enter(frame_stack)
+    elif isinstance(statement, SyntaxMethodDefinition):
+        pass
     else:
         assert False, statement
 
@@ -40,6 +44,10 @@ def interpret_statement_exit(
         pass
     elif isinstance(statement, SyntaxAssignment):
         interpret_assignment_exit(frame_stack, statement)
+    elif isinstance(statement, SyntaxMethodDefinition):
+        interpret_method_definition_exit(
+            frame_stack, statement
+        )
     else:
         assert False, statement
 
@@ -66,6 +74,17 @@ def interpret_assignment_exit(
         environment[binding.name] = expression_stack.pop()
     assert len(expression_stack) == 0, expression_stack
     frame_stack.pop()
+
+
+def interpret_method_definition_exit(
+    frame_stack: MachineFrameStack,
+    method_definition: SyntaxMethodDefinition,
+) -> None:
+    environment = frame_stack.current.environment
+    environment[method_definition.binding.name] = GuestCall(
+        definition_environment=environment,
+        definition_block=method_definition.definition_block,
+    )
 
 
 def next_statement(frame_stack: MachineFrameStack) -> None:

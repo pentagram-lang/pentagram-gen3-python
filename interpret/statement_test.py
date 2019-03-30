@@ -1,3 +1,4 @@
+from guest.call import GuestCall
 from interpret.interpret import init_frame_stack
 from interpret.statement import interpret_statement
 from interpret.test import init_test_frame_stack
@@ -9,6 +10,7 @@ from syntax import SyntaxAssignment
 from syntax import SyntaxBlock
 from syntax import SyntaxExpression
 from syntax import SyntaxIdentifier
+from syntax import SyntaxMethodDefinition
 from syntax import SyntaxNumber
 from syntax import SyntaxStatement
 
@@ -122,3 +124,30 @@ def test_interpret_assignment_2_exit():
         ),
         statement_index=1,
     )
+
+
+def test_interpret_method_definition_exit():
+    statement = SyntaxMethodDefinition(
+        binding=SyntaxIdentifier("f"),
+        definition=SyntaxExpression(
+            [SyntaxIdentifier("sqrt")]
+        ),
+    )
+    frame_stack = init_test_frame_stack(
+        init_statement_block(statement),
+        MachineExpressionStack([]),
+    )
+    interpret_statement(frame_stack)
+    environment = frame_stack.current.environment
+    assert frame_stack == init_frame_stack(
+        init_statement_block(statement),
+        MachineExpressionStack([]),
+        environment,
+        statement_index=1,
+    )
+    assert environment.base == test_environment().base
+    assert environment.bindings == {
+        "f": GuestCall(
+            environment, statement.definition_block
+        )
+    }

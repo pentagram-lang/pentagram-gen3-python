@@ -8,6 +8,7 @@ from syntax import SyntaxBlock
 from syntax import SyntaxComment
 from syntax import SyntaxExpression
 from syntax import SyntaxIdentifier
+from syntax import SyntaxMethodDefinition
 from syntax import SyntaxNumber
 from syntax import SyntaxStatement
 from syntax import SyntaxTerm
@@ -35,6 +36,14 @@ def parse_one_statement(
                         terms[len(bindings) + 1 :]
                     ),
                     bindings=bindings,
+                )
+            elif term.name == "/=":
+                assert len(bindings) == 1
+                return SyntaxMethodDefinition(
+                    binding=bindings[0],
+                    definition=parse_one_statement(
+                        terms[2:]
+                    ),
                 )
             else:
                 bindings.append(SyntaxIdentifier(term.name))

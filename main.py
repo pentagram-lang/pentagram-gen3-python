@@ -37,7 +37,7 @@ def main_run(
 
 
 def main_loop() -> None:
-    environment = base_environment().extend({})
+    environment = base_environment().extend()
 
     def statement_loop(statement_text):
         block = parse(statement_text)

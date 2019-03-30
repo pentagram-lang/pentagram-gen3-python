@@ -98,11 +98,11 @@ class MachineEnvironment:
 
     def extend(
         self,
-        bindings: Dict[
-            str, Union[MachineValue, MachineCall]
-        ],
+        bindings: Optional[
+            Dict[str, Union[MachineValue, MachineCall]]
+        ] = None,
     ) -> "MachineEnvironment":
-        return MachineEnvironment(bindings, base=self)
+        return MachineEnvironment(bindings or {}, base=self)
 
     def __getitem__(
         self, key: str

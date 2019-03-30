@@ -16,7 +16,7 @@ def test_environment(
         Dict[str, Union[MachineValue, MachineCall]]
     ] = None
 ) -> MachineEnvironment:
-    return base_environment().extend(bindings or {})
+    return base_environment().extend(bindings)
 
 
 def init_test_frame_stack(
