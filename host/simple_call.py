@@ -62,8 +62,18 @@ def simple_call(
 
 @simple_call("add")
 def add(blob: bytearray, number: integer) -> bytearray:
+    # Observable side effect due to performance semantics
     blob += number.tobytes()
     return blob
+
+
+@simple_call("cat")
+def cat(
+    initial_blob: bytearray, concatenation_blob: bytearray
+) -> bytearray:
+    # Observable side effect due to performance semantics
+    initial_blob += concatenation_blob
+    return initial_blob
 
 
 @simple_call("nil-blob")

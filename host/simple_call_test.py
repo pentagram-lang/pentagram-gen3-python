@@ -1,4 +1,5 @@
 from host.simple_call import add
+from host.simple_call import cat
 from host.simple_call import nil_blob
 from host.simple_call import sqrt
 from host.simple_call import write
@@ -42,6 +43,25 @@ def test_add_blob(number, expected):
     call_test(
         add,
         [MachineBlob(bytearray()), MachineNumber(number)],
+        [MachineBlob(bytearray(expected))],
+    )
+
+
+def params_cat_blob():
+    yield b"", b"", b""
+    yield b"a", b"", b"a"
+    yield b"", b"b", b"b"
+    yield b"123", b"456", b"123456"
+
+
+@params(params_cat_blob)
+def test_cat_blob(bytes_a, bytes_b, expected):
+    call_test(
+        cat,
+        [
+            MachineBlob(bytearray(bytes_a)),
+            MachineBlob(bytearray(bytes_b)),
+        ],
         [MachineBlob(bytearray(expected))],
     )
 
