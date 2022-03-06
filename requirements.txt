@@ -13,7 +13,7 @@ flake8-builtins==1.4.1
 isort==4.3.9
 mccabe==0.6.1
 more-itertools==6.0.0
-numpy==1.16.1
+numpy==1.21.0
 pathtools==0.1.2
 pip==21.1
 pkg-resources==0.0.0
